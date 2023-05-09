@@ -35,11 +35,24 @@ class FlxEase
 	static var BOUNCE_OUT:Float->Float = bounceOutCustom();
 	static var BOUNCE_IN:Float->Float = bounceInCustom();
 	static var BOUNCE_IN_OUT:Float->Float = bounceInOutCustom();
+	static var ELASTIC_IN:EaseFunction = elasticInCustom();
+	static var ELASTIC_OUT:EaseFunction = elasticOutCustom();
+	static var ELASTIC_IN_OUT:EaseFunction = elasticInOutCustom();
 
 	/** @since 4.3.0 */
 	public static inline function linear(t:Float):Float
 	{
 		return t;
+	}
+
+	public static inline function defaultOut(t:Float, inFunction:EaseFunction):Float
+	{
+		return 1 - inFunction(1 - t);
+	}
+
+	public static inline function defaultInOut(t:Float, inFunction:EaseFunction, outFunction:EaseFunction):Float
+	{
+		return (t <= .5) ? inFunction(t * 2) / 2 : outFunction(t * 2 - 1) / 2 + .5;
 	}
 
 	public static inline function quadIn(t:Float):Float
@@ -54,7 +67,7 @@ class FlxEase
 
 	public static inline function quadInOut(t:Float):Float
 	{
-		return t <= .5 ? quadIn(t) * 2 : 1 - (--t) * t * 2;
+		return t <= .5 ? quadIn(t) * 2 : 1 - (--t) * t * 2;;
 	}
 
 	public static inline function cubeIn(t:Float):Float
@@ -260,26 +273,52 @@ class FlxEase
 		return (1 - (--t) * (t) * (-2.70158 * t - 1.70158)) / 2 + .5;
 	}
 
-	public static inline function elasticIn(t:Float):Float
+	public static function elasticInCustom(?Amplitude:Float, ?Period:Float):EaseFunction
 	{
-		return -(DEFAULT_ELASTIC_AMPLITUDE * Math.pow(2,
-			10 * (t -= 1)) * Math.sin((t - (DEFAULT_ELASTIC_PERIOD / (DOUBLE_PI) * Math.asin(1 / DEFAULT_ELASTIC_AMPLITUDE))) * (DOUBLE_PI) / DEFAULT_ELASTIC_PERIOD));
+		Amplitude = Amplitude == null ? DEFAULT_ELASTIC_AMPLITUDE : Amplitude;
+		Period = Period == null ? DEFAULT_ELASTIC_PERIOD : Period;
+		var func:EaseFunction = function(t:Float)
+		{
+			return -(Amplitude * Math.pow(2,
+				10 * (t -= 1)) * Math.sin((t - (Period / (DOUBLE_PI) * Math.asin(1 / Amplitude))) * (DOUBLE_PI) / Period));
+		};
+		return func;
+	}
+	
+	public static function elasticOutCustom(?Amplitude:Float, ?Period:Float):EaseFunction
+	{
+		var inFunc:EaseFunction = elasticInCustom(Amplitude, Period);
+		var func:EaseFunction = function(t:Float)
+		{
+			return defaultOut(t, inFunc);
+		};
+		return func;
 	}
 
-	public static inline function elasticOut(t:Float):Float
+	public static function elasticInOutCustom(?Amplitude:Float, ?Period:Float):EaseFunction
 	{
-		return (DEFAULT_ELASTIC_AMPLITUDE * Math.pow(2,
-			-10 * t) * Math.sin((t - (DEFAULT_ELASTIC_PERIOD / (DOUBLE_PI) * Math.asin(1 / DEFAULT_ELASTIC_AMPLITUDE))) * (DOUBLE_PI) / DEFAULT_ELASTIC_PERIOD)
-			+ 1);
+		var inFunc:EaseFunction = elasticInCustom(Amplitude, Period);
+		var outFunc:EaseFunction = elasticOutCustom(Amplitude, Period);
+		var func:EaseFunction = function(t:Float)
+		{
+			return defaultInOut(t, inFunc, outFunc);
+		};
+		return func;
+	}
+
+	public static function elasticIn(t:Float):Float
+	{
+		return ELASTIC_IN(t);
+	}
+
+	public static function elasticOut(t:Float):Float
+	{
+		return ELASTIC_OUT(t);
 	}
 
 	public static function elasticInOut(t:Float):Float
 	{
-		if (t < 0.5)
-		{
-			return -0.5 * (Math.pow(2, 10 * (t -= 0.5)) * Math.sin((t - (DEFAULT_ELASTIC_PERIOD / 4)) * (DOUBLE_PI) / DEFAULT_ELASTIC_PERIOD));
-		}
-		return Math.pow(2, -10 * (t -= 0.5)) * Math.sin((t - (DEFAULT_ELASTIC_PERIOD / 4)) * (DOUBLE_PI) / DEFAULT_ELASTIC_PERIOD) * 0.5 + 1;
+		return ELASTIC_IN_OUT(t);
 	}
 }
 
