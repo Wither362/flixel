@@ -67,7 +67,7 @@ class FlxEase
 
 	public static inline function quadInOut(t:Float):Float
 	{
-		return t <= .5 ? quadIn(t) * 2 : 1 - (--t) * t * 2;;
+		return t <= .5 ? quadIn(t) * 2 : 1 - (--t) * t * 2;
 	}
 
 	public static inline function cubeIn(t:Float):Float
