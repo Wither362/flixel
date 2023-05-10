@@ -279,6 +279,10 @@ class FlxSprite extends FlxObject
 	public var clipRect(default, set):FlxRect;
 
 	/**
+	 * Variable used for mouse inputs. If disabled, `this`'s mouse functions  will return false.
+	 */
+	public var processMouseInput(default, set):Bool = false;
+	/**
 	 * GLSL shader for this sprite. Only works with OpenFL Next or WebGL.
 	 * Avoid changing it frequently as this is a costly operation.
 	 * @since 4.1.0
@@ -1360,6 +1364,31 @@ class FlxSprite extends FlxObject
 
 		return this;
 	}
+
+public function checkMouseInput():Bool
+{
+	if(processMouseInput)
+	{
+		if(!FlxGlobalMouseInputManager.usingMouse)
+		{
+			return FlxG.mouse.overlaps(this);
+		}
+	}
+	return false;
+}
+
+function set_processMouseInput(input:Bool):Bool
+{
+	if(processMouseInput != input) {
+		if(!processMouseInput && input) {
+			if(!FlxGlobalMouseInputManager.exists(this)) {
+				FlxGlobalMouseInputManager.add(this);
+			}
+		}
+		processMouseInput = input;
+	}
+	return processMouseInput;
+}
 
 	@:noCompletion
 	function get_pixels():BitmapData
