@@ -242,6 +242,20 @@ class FlxEase
 		}
 		return Math.pow(2, -10 * (t -= 0.5)) * Math.sin((t - (ELASTIC_PERIOD / 4)) * (2 * Math.PI) / ELASTIC_PERIOD) * 0.5 + 1;
 	}
+
+	public static inline function stairsInCustom(steps:Float = 4):EaseFunction
+	{
+		var s:Float = steps - 1;
+		var func:EaseFunction = function(t:Float)
+		{
+			var x:Float = t;
+			return if(x > (0.5 + Math.floor(s * x)) / s)
+				2 * (x - (Math.floor(x * (if(s == 2) 1 else s)) + 1) * (1 / (s * 2))
+			else
+				Math.floor(s * x) / s;
+		};
+		return func;
+	}
 }
 
 typedef EaseFunction = Float->Float;
