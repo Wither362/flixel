@@ -246,11 +246,10 @@ class FlxEase
 	public static inline function stairsInCustom(steps:Float = 4):EaseFunction
 	{
 		var s:Float = steps - 1;
-		var func:EaseFunction = function(t:Float)
+		var func:EaseFunction = function(x:Float)
 		{
-			var x:Float = t;
 			return if(x > (0.5 + Math.floor(s * x)) / s)
-				2 * (x - (Math.floor(x * (if(s == 2) 1 else s)) + 1) * (1 / (s * 2))
+				2 * (x - (Math.floor(x * s) + 1) * (1 / (s * 2))
 			else
 				Math.floor(s * x) / s;
 		};
