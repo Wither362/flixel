@@ -1,0 +1,1 @@
+package flixel.input.mouse;
