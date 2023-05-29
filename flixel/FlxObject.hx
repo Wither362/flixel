@@ -43,7 +43,7 @@ import flixel.util.FlxStringUtil;
  * 
  * You can also specify a callback to handle which specific objects collided:
  * ```haxe
- * FlxG.overlap(playerGroup, medKitGroup
+ * FlxG.overlap(playerGroup, medKitGroup,
  *     function onOverlap(player, medKit)
  *     {
  *         player.health = 100;
